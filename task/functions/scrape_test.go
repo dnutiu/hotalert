@@ -1,4 +1,4 @@
-package target
+package functions
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -38,7 +38,7 @@ func TestScrapeWebTask(t *testing.T) {
 			"TestOk",
 			task.Task{
 				Options: task.Options{
-					"keywords": []string{"keyword"},
+					"keywords": []any{"keyword"},
 				},
 				Timeout:  10 * time.Second,
 				Alerter:  alert.NewDummyAlerter(),
@@ -112,7 +112,7 @@ func TestScrapeWebTask(t *testing.T) {
 
 			tv.Task.Options["url"] = testHttpServer.URL
 
-			err := ScrapeWebTask(&tv.Task)
+			err := WebScrapeTask(&tv.Task)
 			if tv.ExpectedError {
 				assert.Error(t, err)
 			} else {

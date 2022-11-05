@@ -1,4 +1,4 @@
-package target
+package functions
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-// ScrapeWebTask scraps the web page given the task.
-func ScrapeWebTask(task *task.Task) error {
+// WebScrapeTask scraps the web page given the task.
+func WebScrapeTask(task *task.Task) error {
 	// Parse options
 	targetUrl, ok := task.Options["url"].(string)
 	if !ok {

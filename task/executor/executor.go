@@ -1,50 +1,65 @@
-package task
+package executor
 
 import (
 	"errors"
 	"fmt"
+	"hotalert/logging"
+	"hotalert/task"
+	"hotalert/task/functions"
 	"sync"
 )
 
 // Executor is an interface for implementing task executors.
 type Executor interface {
 	// AddTask adds a task to the task executor.
-	AddTask(task *Task)
+	AddTask(task *task.Task)
 	// Start starts the scrapper and returns a Result receive-only channel.
-	Start() <-chan *Result
+	Start() <-chan *task.Result
 	// Shutdown shuts down the scrapper. It will block until the Executor was shut down.
 	Shutdown()
 }
 
-// ExecutionFn is a type definition for a function that executes the task and returns an error.
-type ExecutionFn func(task *Task) error
+// ExecutionFunc is a type definition for a function that executes the task and returns an error.
+type ExecutionFunc func(task *task.Task) error
 
 // DefaultExecutor is a TaskExecutor with the default implementation.
 // The tasks are executed directly on the machine.
 type DefaultExecutor struct {
-	// TaskExecutionFn is the function that executes the task.
-	TaskExecutionFn ExecutionFn
 	// workerGroup is a waiting group for worker goroutines.
 	workerGroup *sync.WaitGroup
 	// numberOfWorkerGoroutines is the number of working goroutines.
 	numberOfWorkerGoroutines int
 	// taskResultChan is a receive only channel for task results.
-	taskResultChan chan *Result
+	taskResultChan chan *task.Result
 	// taskChan is a channel for tasks
-	taskChan chan *Task
+	taskChan chan *task.Task
 	// quinChan is a channel for sending the quit command to worker goroutines.
 	quinChan chan int
 }
 
-// TODO: Add support for per task execution functions
+// executionFuncMap is a map that holds all the possible values for ExecutionFunc.
+// Right now it is hard-coded but in the future it may be extended dynamically.
+var executionFuncMap = map[string]ExecutionFunc{
+	"web_scrape": functions.WebScrapeTask,
+}
+
+// RegisterNewExecutionFunction registers a new execution function.
+func RegisterNewExecutionFunction(name string, function ExecutionFunc) error {
+	for n := range executionFuncMap {
+		if n == name {
+			return errors.New("function already exists")
+		}
+	}
+	executionFuncMap[name] = function
+	return nil
+}
 
 // NewDefaultExecutor returns a new instance of DefaultExecutor.
-func NewDefaultExecutor(fn ExecutionFn) *DefaultExecutor {
+func NewDefaultExecutor() *DefaultExecutor {
 	ws := &DefaultExecutor{
-		TaskExecutionFn:          fn,
 		workerGroup:              &sync.WaitGroup{},
-		taskResultChan:           make(chan *Result, 50),
-		taskChan:                 make(chan *Task, 50),
+		taskResultChan:           make(chan *task.Result, 50),
+		taskChan:                 make(chan *task.Task, 50),
 		numberOfWorkerGoroutines: 5,
 	}
 	ws.quinChan = make(chan int, ws.numberOfWorkerGoroutines)
@@ -52,12 +67,12 @@ func NewDefaultExecutor(fn ExecutionFn) *DefaultExecutor {
 }
 
 // AddTask adds a task to the DefaultExecutor queue.
-func (ws *DefaultExecutor) AddTask(task *Task) {
+func (ws *DefaultExecutor) AddTask(task *task.Task) {
 	ws.taskChan <- task
 }
 
-// executeTask executes the given task using TaskExecutionFn
-func (ws *DefaultExecutor) executeTask(task *Task) error {
+// executeTask executes the given task using DefaultTaskExecutionFuncName
+func (ws *DefaultExecutor) executeTask(task *task.Task) error {
 	var taskErr error = nil
 	// Execute task and set panics as errors in taskResult.
 	func() {
@@ -66,7 +81,16 @@ func (ws *DefaultExecutor) executeTask(task *Task) error {
 				taskErr = errors.New(fmt.Sprintf("panic: %s", r))
 			}
 		}()
-		err := ws.TaskExecutionFn(task)
+
+		taskExecutionFunc, ok := executionFuncMap[task.ExecutionFuncName]
+		if !ok {
+			message := fmt.Sprintf("invalid task execution function name: '%s'", task.ExecutionFuncName)
+			logging.SugaredLogger.Error(message)
+			taskErr = errors.New(message)
+			return
+		}
+
+		err := taskExecutionFunc(task)
 		if err != nil {
 			taskErr = err
 		}
@@ -80,9 +104,10 @@ func (ws *DefaultExecutor) workerGoroutine() {
 	defer ws.workerGroup.Done()
 	for {
 		select {
-		case task := <-ws.taskChan:
-			var taskResult = NewResult(task)
-			taskResult.error = ws.executeTask(task)
+		case currentTask := <-ws.taskChan:
+			var taskResult = task.NewResult(currentTask)
+			err := ws.executeTask(currentTask)
+			taskResult.SetError(err)
 
 			// Forward TaskResult to channel.
 			ws.taskResultChan <- taskResult
@@ -95,7 +120,7 @@ func (ws *DefaultExecutor) workerGoroutine() {
 
 // Start starts the DefaultExecutor.
 // Start returns a receive only channel with task Result.
-func (ws *DefaultExecutor) Start() <-chan *Result {
+func (ws *DefaultExecutor) Start() <-chan *task.Result {
 	// Start worker goroutines.
 	for i := 0; i < ws.numberOfWorkerGoroutines; i++ {
 		ws.workerGroup.Add(1)

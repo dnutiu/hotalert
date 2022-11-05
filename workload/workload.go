@@ -108,8 +108,14 @@ func (p *Workload) buildTasksArray(workloadData map[string]any) error {
 			continue
 		}
 
+		executionFuncName, ok := taskEntry["function"].(string)
+		if !ok {
+			logging.SugaredLogger.Errorf("error parsing entry %d in tasks array: invalid function name", i)
+			continue
+		}
+
 		// Build task
-		tempTask := task.NewTask(taskOptions, alert.DummyAlerter{})
+		tempTask := task.NewTask(executionFuncName, taskOptions, alert.DummyAlerter{})
 
 		// Timeout (optional)
 		taskTimeout, ok := taskEntry["timeout"].(int)

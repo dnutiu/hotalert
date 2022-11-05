@@ -3,8 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"hotalert/logging"
-	"hotalert/task"
-	"hotalert/task/target"
+	"hotalert/task/executor"
 	"hotalert/workload"
 	"os"
 	"sync"
@@ -29,7 +28,7 @@ var fileCmd = &cobra.Command{
 		}
 
 		var waitGroup = sync.WaitGroup{}
-		var defaultExecutor = task.NewDefaultExecutor(target.ScrapeWebTask)
+		var defaultExecutor = executor.NewDefaultExecutor()
 		taskResultChan := defaultExecutor.Start()
 		defer defaultExecutor.Shutdown()
 

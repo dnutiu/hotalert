@@ -14,6 +14,8 @@ type Options map[string]any
 
 // Task represents the context of a task.
 type Task struct {
+	// ExecutionFuncName is the function name associated with this task.
+	ExecutionFuncName string
 	// Options are the option given to the task.
 	Options Options `mapstructure:"options"`
 	// Timeout is the timeout for the task.
@@ -25,15 +27,16 @@ type Task struct {
 }
 
 // NewTask returns a new task instance.
-func NewTask(options Options, alerter alert.Alerter) *Task {
+func NewTask(executionFuncName string, options Options, alerter alert.Alerter) *Task {
 	if alerter == nil {
 		panic(fmt.Sprintf("Alerter cannot be nil"))
 	}
 	return &Task{
-		Options:  options,
-		Timeout:  10 * time.Second,
-		Alerter:  alerter,
-		Callback: nil,
+		ExecutionFuncName: executionFuncName,
+		Options:           options,
+		Timeout:           10 * time.Second,
+		Alerter:           alerter,
+		Callback:          nil,
 	}
 }
 
@@ -51,6 +54,11 @@ func NewResult(task *Task) *Result {
 		InitialTask: task,
 		error:       nil,
 	}
+}
+
+// SetError sets the error on the result object.
+func (r *Result) SetError(err error) {
+	r.error = err
 }
 
 // Error returns the error encountered during the execution of the task.

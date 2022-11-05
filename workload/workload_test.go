@@ -15,6 +15,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
   - options:
       url: https://jobs.ro
       keywords: ["Software Engineer, Front-End", "Software Architect"]
@@ -23,6 +24,7 @@ tasks:
       extra_bool: True
     timeout: 15
     alerter: "webhook_discord"
+    function: "web_scrape"
 alerts:
   webhook_discord:
     webhook: https://webhook.url.com
@@ -69,6 +71,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
   - options:
       url: https://jobs.ro
       keywords: ["Software Engineer, Front-End", "Software Architect"]
@@ -77,6 +80,7 @@ tasks:
       extra_bool: True
     timeout: 15
     alerter: "webhook_discord"
+    function: "web_scrape"
 alerts:
   webhook_discord:
     webhook: https://webhook.url.com
@@ -100,6 +104,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
   - options:
       url: https://jobs.ro
       keywords: ["Software Engineer, Front-End", "Software Architect"]
@@ -108,6 +113,7 @@ tasks:
       extra_bool: True
     timeout: 15
     alerter: "webhook_discord"
+    function: "web_scrape"
 alerts:
   webhook_discord:
     webhook: https://webhook.url.com
@@ -127,6 +133,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
   - options:
       url: https://jobs.ro
       keywords: ["Software Engineer, Front-End", "Software Architect"]
@@ -135,6 +142,7 @@ tasks:
       extra_bool: True
     timeout: 15
     alerter: "webhook_discord"
+    function: "web_scrape"
 alertx:
   webhook_discord:
     webhook: https://webhook.url.com
@@ -149,6 +157,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
   - options:
       url: https://jobs.ro
       keywords: ["Software Engineer, Front-End", "Software Architect"]
@@ -157,6 +166,7 @@ tasks:
       extra_bool: True
     timeout: 15
     alerter: "webhook_discord"
+    function: "web_scrape"
 alerts: "I'm just a string please don't hurt me."
 `
 
@@ -167,6 +177,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
   - options:
       url: https://jobs.ro
       keywords: ["Software Engineer, Front-End", "Software Architect"]
@@ -175,6 +186,7 @@ tasks:
       extra_bool: True
     timeout: 15
     alerter: "webhook_discord"
+    function: "web_scrape"
 alerts:
   webhook_discord:
     webhook: https://webhook.url.com
@@ -194,6 +206,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
   - options:
       url: https://jobs.ro
       keywords: ["Software Engineer, Front-End", "Software Architect"]
@@ -202,6 +215,7 @@ tasks:
       extra_bool: True
     timeout: 15
     alerter: "webhook_discord"
+    function: "web_scrape"
 alerts:
   imcoolalerter:
     cool: true
@@ -241,6 +255,7 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "imaacoolalerter"
+    function: "web_scrape"
 alerts:
   webhook_discord:
     webhook: https://webhook.url.com
@@ -316,11 +331,13 @@ tasks:
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "imaacoolalerter"
+    function: "web_scrape"
   - options:
       url: https://jobs.eu
       keywords: ["Software Engineer, Backend"]
     timeout: 10
     alerter: "webhook_discord"
+    function: "web_scrape"
 alerts:
   webhook_discord:
     webhook: https://webhook.url.com
@@ -330,6 +347,33 @@ alerts:
 
 func Test_FromYamlContent_InvalidAlerterForTask(t *testing.T) {
 	currentWorkload, err := FromYamlContent([]byte(testTasksTaskHasInvalidAlerter2))
+	assert.NoError(t, err)
+	assert.NotNil(t, currentWorkload)
+	assert.Len(t, currentWorkload.tasksList, 1)
+}
+
+var testTasksTaskHasInvalidExecutionFunction = `
+tasks:
+  - options:
+      url: https://jobs.eu
+      keywords: ["Software Engineer, Backend"]
+    timeout: 10
+    alerter: "imaacoolalerter"
+  - options:
+      url: https://jobs.eu
+      keywords: ["Software Engineer, Backend"]
+    timeout: 10
+    alerter: "webhook_discord"
+    function: "web_scrape"
+alerts:
+  webhook_discord:
+    webhook: https://webhook.url.com
+    # $keywords can be used as a placeholder in the message, and it will be replaced with the actual keywords.
+    message: "Hi, the keyword $keywords was found on page!"
+`
+
+func Test_FromYamlContent_InvalidExecutionFuncNameForTask(t *testing.T) {
+	currentWorkload, err := FromYamlContent([]byte(testTasksTaskHasInvalidExecutionFunction))
 	assert.NoError(t, err)
 	assert.NotNil(t, currentWorkload)
 	assert.Len(t, currentWorkload.tasksList, 1)
