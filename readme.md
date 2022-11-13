@@ -1,10 +1,10 @@
-# Hot Alert
+# hotalert
 
 ## Introduction
-Hotalert is a command line tool that for task execution and configuration. Tasks and alerts are defined
-in yaml files and the program parses the files, executes the tasks and emits alerts when the tasks conditions are met.
+hotalert is a command line tool for task execution and alerting. Tasks and alerts are defined in yaml files.
 
-For example if you want to send a notification to your mobile phone when a keyword is found on a website you can use the
+### Example
+If you want to send a notification to your mobile phone when a keyword is found on a website you can use the
 `webhook_discord` alerter and the `web_scrape` task function.
 
 Example:
