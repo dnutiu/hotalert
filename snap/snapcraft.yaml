@@ -1,0 +1,24 @@
+name: hotalert
+summary: A command line tool for task execution and alerting
+description: |
+  hotalert is a command line tool for task execution and alerting. Tasks and alerts are defined in yaml files.
+version: git
+grade: stable
+base: core20
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+
+confinement: devmode
+
+apps:
+  hotalert:
+    command: bin/hotalert
+    plugs:
+      - home
+parts:
+  hotalert:
+    plugin: go
+    go-channel: 1.19/stable
+    source-type: git
+    source: https://github.com/dnutiu/hotalert

@@ -3,6 +3,12 @@
 ## Introduction
 hotalert is a command line tool for task execution and alerting. Tasks and alerts are defined in yaml files.
 
+## Installation
+
+**Snapstore**
+
+Get the snap: https://snapcraft.io/hotalert/preview
+
 ### Example
 If you want to send a notification to your mobile phone when a keyword is found on a website you can use the
 `webhook_discord` alerter and the `web_scrape` task function.
