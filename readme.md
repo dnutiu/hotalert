@@ -30,6 +30,39 @@ alerts:
     message: "Hi, the keyword(s) `$keywords` was found on [...]"
 ```
 
+Viewing the help:
+
+```bash
+Hotalert is a command line tool that for task execution and configuration. Tasks and alerts are defined 
+in yaml files and the program parses the files, executes the tasks and emits alerts when the tasks conditions are met.
+
+Usage:
+  hotalert [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  directory   execute each yaml file from a directory
+  file        execute tasks from a single file
+  help        Help about any command
+
+Flags:
+  -h, --help   help for hotalert
+
+Use "hotalert [command] --help" for more information about a command.
+```
+
+Running the program
+```bash
+./hotalert file test_file.yaml
+2022-12-19T22:12:22.435+0200	INFO	alert/discord.go:82	Alert posted:
+BEGIN
+Hi, the keyword(s) `Episode 10,Episode 11` was found on [...]
+END
+2022-12-19T22:12:22.435+0200	INFO	cmd/file.go:60	Done
+```
+
+Output: 
+
 ### Available task functions
 
 #### web_scrape
