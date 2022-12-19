@@ -3,6 +3,8 @@
 ## Introduction
 hotalert is a command line tool for task execution and alerting. Tasks and alerts are defined in yaml files.
 
+A sample use case is to run it on PC or a Raspberry PI and get alerts on your mobile device when certain keywords apear in an URL.
+
 ## Installation
 
 **Snapstore**
@@ -62,6 +64,8 @@ END
 ```
 
 Output: 
+
+![Discord preview](/docs/discord_alert.png)
 
 ### Available task functions
 
