@@ -5,6 +5,11 @@ hotalert is a command line tool for task execution and alerting. Tasks and alert
 
 A sample use case is to run it on PC or a Raspberry PI and get alerts on your mobile device when certain keywords apear in an URL.
 
+--
+
+It wants to be like [Windows Task Scheduler](https://en.wikipedia.org/wiki/Windows_Task_Scheduler) but it requires [Cron](https://en.wikipedia.org/wiki/Cron) for scheduling and at the moment it is stateless.
+
+
 ## Installation
 
 **Snapstore**
