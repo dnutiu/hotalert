@@ -7,7 +7,7 @@ A sample use case is to run it on PC or a Raspberry PI and get alerts on your mo
 
 --
 
-It wants to be like [Windows Task Scheduler](https://en.wikipedia.org/wiki/Windows_Task_Scheduler) but it requires [Cron](https://en.wikipedia.org/wiki/Cron) for scheduling and at the moment it is stateless.
+It wants to be like [Windows Task Scheduler](https://en.wikipedia.org/wiki/Windows_Task_Scheduler) but it requires [Cron](https://en.wikipedia.org/wiki/Cron) for scheduling and at the moment it is stateless and does not have much functionality.
 
 
 ## Installation
