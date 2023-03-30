@@ -12,10 +12,6 @@ It wants to be like [Windows Task Scheduler](https://en.wikipedia.org/wiki/Windo
 
 ## Installation
 
-**Snapstore**
-
-Get the snap: https://snapcraft.io/hotalert/preview
-
 ### Example
 If you want to send a notification to your mobile phone when a keyword is found on a website you can use the
 `webhook_discord` alerter and the `web_scrape` task function.
